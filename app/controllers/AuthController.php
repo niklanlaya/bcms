@@ -1,27 +1,40 @@
 <?php
 class AuthController extends Controller {
+    
     public function login() {
+        // ถ้า Login อยู่แล้วให้เด้งไปหน้าจองเลย
+        if (isset($_SESSION['user_id'])) {
+            header("Location: /booking");
+            exit;
+        }
         $this->view('auth/login');
     }
 
     public function authenticate() {
-        $username = $_POST['username'];
-        $password = $_POST['password'];
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $username = $_POST['username'];
+            $password = $_POST['password'];
 
-        $db = (new Database())->connect();
-        $stmt = $db->prepare("SELECT * FROM users WHERE username = :username");
-        $stmt->execute(['username' => $username]);
-        $user = $stmt->fetch(PDO::FETCH_OBJ);
+            $db = (new Database())->connect();
+            $stmt = $db->prepare("SELECT * FROM users WHERE username = :username");
+            $stmt->execute(['username' => $username]);
+            $user = $stmt->fetch(PDO::FETCH_OBJ);
 
-        // ในระบบจริงควรใช้ password_verify($password, $user->password)
-        // แต่สำหรับตัวอย่างนี้ เราข้ามการ hash เพื่อความง่าย หรือใช้รหัสผ่าน 'password' ตาม mock data
-        if ($user && password_verify($password, $user->password)) {
-            $_SESSION['user_id'] = $user->id;
-            $_SESSION['user_name'] = $user->fullname;
-            $_SESSION['role'] = $user->role;
-            header("Location: /booking");
-        } else {
-            header("Location: /auth/login?error=true");
+            // ตรวจสอบรหัสผ่าน (รองรับทั้ง User เก่าและใหม่ที่ผ่านการ Hash)
+            if ($user && password_verify($password, $user->password)) {
+                // Login สำเร็จ
+                $_SESSION['user_id'] = $user->id;
+                $_SESSION['user_name'] = $user->fullname;
+                $_SESSION['role'] = $user->role;
+                
+                // แจ้งเตือนต้อนรับ
+                $_SESSION['alert'] = ['type' => 'success', 'msg' => 'ยินดีต้อนรับ ' . $user->fullname];
+                
+                header("Location: /booking");
+            } else {
+                // Login ไม่สำเร็จ
+                header("Location: /auth/login?error=true");
+            }
         }
     }
 

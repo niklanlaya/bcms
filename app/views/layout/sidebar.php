@@ -28,6 +28,18 @@
         </div>
         <a href="/vehicle" class="block py-3 px-6 hover:bg-white/50 transition text-gray-700 border-l-4 border-transparent hover:border-pink-500">
             🚌 จัดการยานพาหนะ
+
+            <!-- ต่อจากเมนู จัดการยานพาหนะ -->
+        <?php if($_SESSION['role'] == 'admin'): ?>
+        <a href="/user" class="block py-3 px-6 hover:bg-white/50 transition text-gray-700 border-l-4 border-transparent hover:border-pink-500">
+        👥 จัดการผู้ใช้งาน
+    </a>
+    <?php endif; ?>
+    
+    <!-- ย้ายปุ่ม Profile มาไว้ท้ายสุดก่อน Logout -->
+    <a href="/user/profile" class="block py-3 px-6 hover:bg-white/50 transition text-gray-700 border-l-4 border-transparent hover:border-pink-500 mt-4 border-t border-pink-100">
+        👤 ข้อมูลส่วนตัว / เปลี่ยนรหัส
+    </a>
         </a>
         <?php endif; ?>
         
