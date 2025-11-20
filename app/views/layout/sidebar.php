@@ -21,10 +21,21 @@
         <a href="/booking/create" class="block py-3 px-6 hover:bg-white/50 transition text-gray-700 border-l-4 border-transparent hover:border-pink-500">
             ➕ จองรถใหม่
         </a>
+        
+        <?php if($_SESSION['role'] == 'staff' || $_SESSION['role'] == 'admin'): ?>
+        <div class="mt-4 mb-2 px-6 text-xs text-pink-800 font-bold opacity-50 uppercase tracking-wider">
+            ผู้ดูแลระบบ
+        </div>
+        <a href="/vehicle" class="block py-3 px-6 hover:bg-white/50 transition text-gray-700 border-l-4 border-transparent hover:border-pink-500">
+            🚌 จัดการยานพาหนะ
+        </a>
+        <?php endif; ?>
+        
         <a href="/auth/logout" class="block py-3 px-6 hover:bg-red-100 transition text-red-600 mt-10">
             🚪 ออกจากระบบ
         </a>
     </nav>
+
 </aside>
 <div class="w-64 hidden md:block"></div> <!-- Spacer -->
 <?php endif; ?>
