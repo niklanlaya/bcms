@@ -83,6 +83,12 @@
                                 </button>
                             </form>
                         <?php endif; ?>
+
+                        <?php if($booking->status == 'director_approved'): ?>
+                            <a href="/booking/print/<?php echo $booking->id; ?>" target="_blank" class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-bold hover:bg-gray-200 transition flex items-center gap-1 inline-block mt-1">
+                                🖨️ พิมพ์
+                            </a>
+                        <?php endif; ?>
                     </td>
                 </tr>
                 <?php endforeach; ?>

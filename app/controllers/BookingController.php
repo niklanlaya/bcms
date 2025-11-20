@@ -125,4 +125,40 @@ class BookingController extends Controller {
             header("Location: /booking");
         }
     }
+
+     // [เพิ่มใหม่] หน้าสำหรับพิมพ์ใบขออนุญาต
+    public function print($id) {
+        if (!isset($_SESSION['user_id'])) { header("Location: /auth/login"); exit; }
+
+        $model = $this->model('BookingModel');
+        $booking = $model->getBookingById($id);
+
+        // ป้องกันไม่ให้คนอื่นมาแอบพิมพ์ของคนอื่น (เว้นแต่เป็น Admin/Staff)
+        if (!$booking || ($booking->user_id != $_SESSION['user_id'] && $_SESSION['role'] == 'user')) {
+             die("ไม่มีสิทธิ์เข้าถึงรายการนี้");
+        }
+        
+        // ดึงข้อมูลชื่อรถเพิ่มเติม (เพราะใน getBookingById อาจไม่มีชื่อรถ)
+        // หรือจะแก้ getBookingById ให้ JOIN table vehicles ก็ได้ แต่วิธีนี้ง่ายกว่าสำหรับตอนนี้
+        $vehicle_name = '-';
+        if ($booking->vehicle_id) {
+            $db = (new Database())->connect();
+            $stmt = $db->prepare("SELECT name, plate_number FROM vehicles WHERE id = :id");
+            $stmt->execute(['id' => $booking->vehicle_id]);
+            $vehicle = $stmt->fetch(PDO::FETCH_OBJ);
+            if($vehicle) $vehicle_name = $vehicle->name . ' (' . $vehicle->plate_number . ')';
+        }
+        
+        // ดึงชื่อผู้ขอ (User)
+        $db = (new Database())->connect();
+        $stmt = $db->prepare("SELECT fullname, position, department FROM users WHERE id = :id");
+        $stmt->execute(['id' => $booking->user_id]);
+        $user = $stmt->fetch(PDO::FETCH_OBJ);
+
+        $this->view('booking/print', [
+            'booking' => $booking,
+            'vehicle_name' => $vehicle_name,
+            'user' => $user
+        ]);
+    }
 }
