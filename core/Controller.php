@@ -15,21 +15,23 @@ class Controller {
     
     // ฟังก์ชันแจ้งเตือน Telegram
     public function sendTelegram($message) {
-        // นำ Token และ Chat ID มาใส่ตรงนี้
-        $token = "8579581106:AAFFMVnj3PmnQgHnDBJGdgI-ziFTNY06xBI";     // <-- อย่าลืมใส่ Token จริง
-        $chat_id = "8395704207"; // <-- อย่าลืมใส่ Chat ID จริง
         
-        if($token == "YOUR_TELEGRAM_BOT_TOKEN") return; 
+        // ดึงค่าจาก DB โดยตรง
+        require_once '../app/models/SettingModel.php';
+        $settingModel = new SettingModel();
+        $settings = $settingModel->getSettings();
+
+        $token = $settings->telegram_token;
+        $chat_id = $settings->telegram_chat_id;
+        
+        // ถ้าไม่ได้ตั้งค่าไว้ ให้ข้ามไป
+        if(empty($token) || empty($chat_id)) return;
 
         $url = "https://api.telegram.org/bot" . $token . "/sendMessage?chat_id=" . $chat_id;
         $url = $url . "&text=" . urlencode($message);
         
-        // ยิง Request
         $ch = curl_init();
-        
-        // *** แก้ไขบรรทัดนี้ครับ (ลบ _OPT ออก) ***
         curl_setopt($ch, CURLOPT_URL, $url); 
-        
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_TIMEOUT, 10);
         curl_exec($ch);

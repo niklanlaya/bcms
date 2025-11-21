@@ -3,10 +3,10 @@
         <!-- ส่วน Footer ด้านล่าง -->
         <footer class="mt-auto py-6 text-center glass m-4 mx-8">
             <p class="text-sm text-pink-500 font-medium">
-                © <?php echo date('Y'); ?> ระบบจองยานพาหนะ (BCMS)
+                <?php echo isset($sysConfig) ? $sysConfig->footer_text : '© ระบบจองยานพาหนะ (BCMS)'; ?>
             </p>
             <p class="text-xs text-pink-400 mt-1">
-                โรงเรียนเตรียมอุดมศึกษา ภาคเหนือ จังหวัดพิษณุโลก
+                <?php echo isset($sysConfig) ? $sysConfig->school_name : ''; ?>
             </p>
         </footer>
 

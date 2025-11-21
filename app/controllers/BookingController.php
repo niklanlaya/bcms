@@ -6,9 +6,17 @@ class BookingController extends Controller {
         if (!isset($_SESSION['user_id'])) { header("Location: /auth/login"); exit; }
         
         $model = $this->model('BookingModel');
-        $bookings = $model->getAllBookings();
         
-        // ดึงข้อมูลรถสำหรับการอนุมัติ (Dropdown)
+        // [แก้ไข Logic ตรงนี้]
+        // ถ้าเป็น Admin หรือ Staff -> เห็นทั้งหมด
+        // ถ้าเป็น User ธรรมดา -> เห็นแค่ของตัวเอง
+        if ($_SESSION['role'] == 'admin' || $_SESSION['role'] == 'staff') {
+            $bookings = $model->getAllBookings();
+        } else {
+            $bookings = $model->getBookingsByUserId($_SESSION['user_id']);
+        }
+        
+        // ดึงข้อมูลรถสำหรับการอนุมัติ (เฉพาะ Staff/Admin ที่ต้องใช้ แต่ User โหลดไปก็ไม่เสียหาย)
         $db = (new Database())->connect();
         $stmt = $db->query("SELECT * FROM vehicles");
         $vehicles = $stmt->fetchAll(PDO::FETCH_OBJ);

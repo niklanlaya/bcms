@@ -17,6 +17,19 @@ class BookingModel {
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
+
+    // [เพิ่มใหม่] ดึงรายการจองเฉพาะของ User คนนั้น
+    public function getBookingsByUserId($user_id) {
+        $sql = "SELECT b.*, u.fullname as requester_name, v.name as vehicle_name 
+                FROM bookings b 
+                LEFT JOIN users u ON b.user_id = u.id 
+                LEFT JOIN vehicles v ON b.vehicle_id = v.id 
+                WHERE b.user_id = :user_id 
+                ORDER BY b.created_at DESC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['user_id' => $user_id]);
+        return $stmt->fetchAll(PDO::FETCH_OBJ);
+    }
     
     // ดึงข้อมูลการจองที่อนุมัติแล้ว (สำหรับปฏิทิน)
     public function getApprovedBookings() {
